@@ -1,15 +1,12 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authorization;
 using ContactManager.Data;
 using ContactManager.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ContactManager.Pages_Contacts
 {
-    [AllowAnonymous]
+    [Authorize]
     public class IndexModel : PageModel
     {
         private readonly ApplicationDbContext _context;
@@ -23,9 +20,7 @@ namespace ContactManager.Pages_Contacts
 
         public async Task OnGetAsync()
         {
-            Contacts = await _context.Contacts
-                .Where(c => !c.IsDeleted)
-                .ToListAsync();
+            Contacts = await _context.Contacts.ToListAsync();
         }
     }
 }

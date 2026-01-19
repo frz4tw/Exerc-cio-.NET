@@ -254,3 +254,4 @@ C:\Users\frz4t\Documents\Exercicio\ContactManager\obj\Debug\net8.0\refint\Contac
 C:\Users\frz4t\Documents\Exercicio\ContactManager\obj\Debug\net8.0\ContactManager.pdb
 C:\Users\frz4t\Documents\Exercicio\ContactManager\obj\Debug\net8.0\ContactManager.genruntimeconfig.cache
 C:\Users\frz4t\Documents\Exercicio\ContactManager\obj\Debug\net8.0\ref\ContactManager.dll
+C:\Users\frz4t\Documents\Exercicio\ContactManager\obj\Debug\net8.0\ContactManager.sourcelink.json
