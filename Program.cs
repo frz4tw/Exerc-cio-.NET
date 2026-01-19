@@ -11,10 +11,13 @@ builder.Services.AddRazorPages();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     var connectionString = builder.Configuration.GetConnectionString("MariaDB");
-    options.UseMySql(connectionString, ServerVersion.Parse("10.6.0-mariadb"));
+    options.UseMySql(
+        connectionString,
+        ServerVersion.Parse("10.6.0-mariadb")
+    );
 });
 
-// Auth (requisito extra do exercício)
+// Auth
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
@@ -25,14 +28,16 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-// 🔥 AQUI É A PARTE CRÍTICA 🔥
-// RODA AS MIGRATIONS NO AMBIENTE REMOTO
+
+// 🔥 APPLY MIGRATIONS AUTOMATICALLY (THIS IS THE FIX)
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     db.Database.Migrate();
 }
 
+
+// Pipeline
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
@@ -41,9 +46,12 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
 app.UseRouting();
+
 app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapRazorPages();
 
 app.Run();
