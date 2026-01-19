@@ -7,17 +7,16 @@ var builder = WebApplication.CreateBuilder(args);
 // Razor Pages
 builder.Services.AddRazorPages();
 
-// Database
+// DbContext
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
-    var connectionString = builder.Configuration.GetConnectionString("MariaDB");
     options.UseMySql(
-        connectionString,
+        builder.Configuration.GetConnectionString("MariaDB"),
         ServerVersion.Parse("10.6.0-mariadb")
     );
 });
 
-// Auth
+// Authentication
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
@@ -29,11 +28,11 @@ builder.Services.AddAuthorization();
 var app = builder.Build();
 
 
-// 🔥 APPLY MIGRATIONS AUTOMATICALLY (THIS IS THE FIX)
+// 🚨 ISTO É O MAIS IMPORTANTE DO EXERCÍCIO
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    db.Database.Migrate();
+    db.Database.Migrate(); // <- CRIA Contacts
 }
 
 
