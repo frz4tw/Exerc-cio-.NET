@@ -1,22 +1,20 @@
 using ContactManager.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
-
-
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container
+// Razor Pages
 builder.Services.AddRazorPages();
 
+// Database
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseMySql(
-        builder.Configuration.GetConnectionString("MariaDB"),
-        ServerVersion.Parse("10.6.0-mariadb")
-    ));
+{
+    var connectionString = builder.Configuration.GetConnectionString("MariaDB");
+    options.UseMySql(connectionString, ServerVersion.Parse("10.6.0-mariadb"));
+});
 
+// Auth (requisito extra do exercício)
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
@@ -27,16 +25,14 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-// Ensure database creation
-if (!app.Environment.IsDevelopment())
+// 🔥 AQUI É A PARTE CRÍTICA 🔥
+// RODA AS MIGRATIONS NO AMBIENTE REMOTO
+using (var scope = app.Services.CreateScope())
 {
-    using var scope = app.Services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    db.Database.EnsureCreated();
+    db.Database.Migrate();
 }
 
-
-// Configure the HTTP request pipeline
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
@@ -44,15 +40,10 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseStaticFiles();
-
 app.UseRouting();
-
 app.UseAuthentication();
-
 app.UseAuthorization();
-
 app.MapRazorPages();
 
 app.Run();
